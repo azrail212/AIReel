@@ -12,8 +12,8 @@ export default function Home() {
   return (
     <View className="flex-1 items-center justify-center bg-white">
           <Text className="text-3xl font-pblack">AIReel</Text>
-          <StatusBar style="auto"></StatusBar>
-          <Link href="/profile" style={{color:'blue'}}>Go to Profile</Link>
+          <StatusBar style="auto"/>
+          <Link href="/home" style={{color:'blue'}}>Go to Home</Link>
         </View>
   );
 }
