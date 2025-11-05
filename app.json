@@ -3,7 +3,6 @@
     "name": "AIReel",
     "slug": "AIReel",
     "version": "1.0.0",
-
     "scheme": "AIReel",
     "platforms": ["ios", "android"],
     "web": {
