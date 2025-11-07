@@ -79,6 +79,23 @@ npm run android  # start and open on Android emulator/device
 - expo-router
 - NativeWind (Tailwind-like styling)
 
+## Diagrams
+```mermaid
+flowchart TD
+
+A[User enters email, password, username] --> B[Client calls createUser()]
+B --> C[Appwrite Account.create()]
+C --> D{Account created?}
+D -- No --> E[Throw error & show message]
+D -- Yes --> F[Generate avatar URL from Avatars.getInitials()]
+F --> G[Call signIn() to create session]
+G --> H[Appwrite createEmailSession()]
+H --> I[Databases.createDocument() in users collection]
+I --> J[Store user data: accountId, email, username, avatar]
+J --> K[Return newUser object & navigate to app]
+
+
+
 ## Notes & tips
 
 - If tab labels wrap or truncate, adjust the tab label/container width in `app/(tabs)/_layout.tsx` (the `TabIcon` `View`).

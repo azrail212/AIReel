@@ -3,7 +3,7 @@
     "name": "AIReel",
     "slug": "AIReel",
     "version": "1.0.0",
-    "scheme": "AIReel",
+    "scheme": "aireel",
     "platforms": ["ios", "android"],
     "web": {
       "bundler": "metro",
@@ -32,6 +32,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package":"com.azra.aireel",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

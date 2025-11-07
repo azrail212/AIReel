@@ -1,5 +1,6 @@
 import { Stack, Link, router, Redirect } from 'expo-router';
 
+import 'react-native-url-polyfill/auto'
 import { View,Text, ScrollView, Image} from 'react-native';
 
 import {StatusBar} from 'expo-status-bar'
@@ -11,10 +12,10 @@ export default function Home() {
   return (
     <SafeAreaView className='bg-primary h-full'>
       <ScrollView contentContainerStyle={{height: '100%'}}>
-        <View className='w-full justify-center items-center min-h-[85vh] px-'>
+        <View className='w-full justify-center items-center min-h-[85vh] px-3'>
           <Image
             source={images.logo}
-            className='w-[130px] h-[84px]'
+            className='w-[300px] h-[150px]'
             resizeMode='contain'
           />
           <Image
