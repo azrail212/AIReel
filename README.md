@@ -79,7 +79,11 @@ npm run android  # start and open on Android emulator/device
 - expo-router
 - NativeWind (Tailwind-like styling)
 
-## Diagrams
+## 🧩 Signup Flow
+
+Below is the Appwrite signup flow used in the React Native app:
+
+
 flowchart TD
     A[User submits email, password, username] --> B[createUser() called]
     B --> C[Appwrite Account.create()]
@@ -89,7 +93,6 @@ flowchart TD
     F --> G[Sign in via account.createEmailSession()]
     G --> H[Create document in Appwrite Database]
     H --> I[Return new user object]
-
 
 
 
