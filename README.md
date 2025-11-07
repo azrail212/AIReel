@@ -80,6 +80,7 @@ npm run android  # start and open on Android emulator/device
 - NativeWind (Tailwind-like styling)
 
 ## Diagrams
+```mermaid
 flowchart TD
     A[User submits email, password, username] --> B[createUser() called]
     B --> C[Appwrite Account.create()]
@@ -89,7 +90,7 @@ flowchart TD
     F --> G[Sign in via account.createEmailSession()]
     G --> H[Create document in Appwrite Database]
     H --> I[Return new user object]
-
+```
 
 
 
