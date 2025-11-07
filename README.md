@@ -79,20 +79,6 @@ npm run android  # start and open on Android emulator/device
 - expo-router
 - NativeWind (Tailwind-like styling)
 
-## Diagrams
-flowchart TD
-    A[User submits email, password, username] --> B[createUser() called]
-    B --> C[Appwrite Account.create()]
-    C --> D{Account created?}
-    D -- No --> E[Throw Error]
-    D -- Yes --> F[Generate avatar URL using avatars.getInitials()]
-    F --> G[Sign in via account.createEmailSession()]
-    G --> H[Create document in Appwrite Database]
-    H --> I[Return new user object]
-
-
-
-
 ## Notes & tips
 
 - If tab labels wrap or truncate, adjust the tab label/container width in `app/(tabs)/_layout.tsx` (the `TabIcon` `View`).
