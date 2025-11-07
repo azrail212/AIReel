@@ -80,19 +80,16 @@ npm run android  # start and open on Android emulator/device
 - NativeWind (Tailwind-like styling)
 
 ## Diagrams
-```mermaid
 flowchart TD
+    A[User submits email, password, username] --> B[createUser() called]
+    B --> C[Appwrite Account.create()]
+    C --> D{Account created?}
+    D -- No --> E[Throw Error]
+    D -- Yes --> F[Generate avatar URL using avatars.getInitials()]
+    F --> G[Sign in via account.createEmailSession()]
+    G --> H[Create document in Appwrite Database]
+    H --> I[Return new user object]
 
-A[User enters email, password, username] --> B[Client calls createUser()]
-B --> C[Appwrite Account.create()]
-C --> D{Account created?}
-D -- No --> E[Throw error & show message]
-D -- Yes --> F[Generate avatar URL from Avatars.getInitials()]
-F --> G[Call signIn() to create session]
-G --> H[Appwrite createEmailSession()]
-H --> I[Databases.createDocument() in users collection]
-I --> J[Store user data: accountId, email, username, avatar]
-J --> K[Return newUser object & navigate to app]
 
 
 
