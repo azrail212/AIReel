@@ -79,27 +79,17 @@ npm run android  # start and open on Android emulator/device
 - expo-router
 - NativeWind (Tailwind-like styling)
 
-## 🧩 Signup Flow
+## Diagrams
+flowchart TD
+    A[User submits email, password, username] --> B[createUser() called]
+    B --> C[Appwrite Account.create()]
+    C --> D{Account created?}
+    D -- No --> E[Throw Error]
+    D -- Yes --> F[Generate avatar URL using avatars.getInitials()]
+    F --> G[Sign in via account.createEmailSession()]
+    G --> H[Create document in Appwrite Database]
+    H --> I[Return new user object]
 
-Below is the Appwrite signup flow used in the React Native app:
-
-User enters email, password, username
-        ↓
-createUser() function is called
-        ↓
-Appwrite Account.create() is triggered
-        ↓
-Is account created successfully?
-        ├── No → Throw Error
-        └── Yes → Continue
-                  ↓
-Generate avatar URL using avatars.getInitials(username)
-                  ↓
-Sign in with account.createEmailSession(email, password)
-                  ↓
-Create new user document in Appwrite Database
-                  ↓
-Return newUser object
 
 
 
