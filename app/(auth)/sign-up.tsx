@@ -1,13 +1,14 @@
-import { View, Text, ScrollView, Image, Alert } from 'react-native'
-import React, { useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import images from '../../constants/images'
-import FormField from '@/components/FormField'
-import CustomButton from '@/components/CustomButton'
-import { Link, router } from 'expo-router'
-import { createUser, account } from '../../lib/appwrite'
+import { useState } from "react";
+import { Link, router } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, ScrollView, Alert, Image } from "react-native";
 
+import { images } from "../../constants";
+import CustomButton from '@/components/CustomButton';
+import FormField from "@/components/FormField";
 
+import { useGlobalContext } from "../../context/GlobalProvider";
+import { createUser } from "../../lib/appwrite";
 
 const SignUp = () => {
   const [form, setForm] = useState({
@@ -16,10 +17,11 @@ const SignUp = () => {
     password: ''
   })
   
+  const { setUser, setIsLoggedIn } = useGlobalContext();
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const submit = async () => {
-    if(!form.username || !form.email || !form.password) {
+    if(form.username === "" || form.email === "" || form.password === "") {
       Alert.alert('Error', 'Please fill all the fields')
     }
 
@@ -27,7 +29,10 @@ const SignUp = () => {
 
     try {
       const result = await createUser(form.email, form.password, form.username);
+      
       // set it to global state ...
+      setUser(result);
+      setIsLoggedIn(true);
 
       router.replace('/home');
 
