@@ -1,7 +1,6 @@
 import { View, Text, FlatList, Image, RefreshControl, Alert, ScrollView } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import GlobalProvider from '@/context/GlobalProvider'
 import { images } from '@/constants'
 import SearchInput from '@/components/SearchInput'
 import Trending from '@/components/Trending'
@@ -23,7 +22,6 @@ const Home = () => {
     setRefreshing(false);
   }
 
-  console.log(posts);
   
   return (
     <SafeAreaView className='bg-primary h-full'>

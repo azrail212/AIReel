@@ -2,7 +2,7 @@ import { View, Text, Image, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { icons } from '@/constants'
 import { useState } from 'react'
-
+import WebView from 'react-native-webview'
 
 interface Creator {
   username: string;
@@ -52,7 +52,23 @@ const VideoCard = ({ video: { title, thumbnail, video, creator: { username, avat
         </View>
 
         {play ? (
-            <Text className='text-white'>Playing</Text>
+             <WebView
+    source={{       uri: `${video}?autoplay=1&muted=1&controls=1&title=0&byline=0`,
+ }}
+    style={{
+      width: 380,
+      height: 288,
+      marginTop: 12,
+      borderRadius: 33,
+      overflow: "hidden",
+      backgroundColor: "black", 
+
+    }}
+    className= "w-full h-60 rounded-xl mt-3"
+    allowsFullscreenVideo
+        mediaPlaybackRequiresUserAction={false}
+
+  />
         ) : (
             <TouchableOpacity
             activeOpacity={0.7}
