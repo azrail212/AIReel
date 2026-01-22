@@ -41,14 +41,14 @@ const Create = () => {
   const resetForm = useCallback(() => {
     setForm({ ...defaultForm });
   }, [defaultForm]);
-    
+
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     resetForm();
     setRefreshing(false);
   }, [resetForm]);
 
-   // Helper: ensure video URI becomes file:// (expo-av friendly on Android)
+  // Helper: ensure video URI becomes file:// (expo-av friendly on Android)
   const ensureFileUri = useCallback(async (uri: string, fallbackName: string) => {
     if (!uri.startsWith('content://')) return uri;
 
@@ -94,13 +94,11 @@ const Create = () => {
         thumbnail: { ...asset, uri: finalUri },
       }));
     },
-    [ensureFileUri]
-  );
+    [ensureFileUri] 
 
-  // 7) These handlers are stable and avoid spreading stale state
   const onChangeTitle = useCallback((value: string) => {
-    setForm((prev) => ({ ...prev, title: value }));
-  }, []);
+      setForm((prev) => ({ ...prev, title: value }));
+    }, []);
 
   const onChangePrompt = useCallback((value: string) => {
     setForm((prev) => ({ ...prev, prompt: value }));
@@ -114,72 +112,74 @@ const Create = () => {
 
   return (
     <SafeAreaView className='bg-primary h-full'>
-      <ScrollView className='px-4 my-6'   
-                  refreshControl={
-                  <RefreshControl 
-                    refreshing={refreshing} 
-                    onRefresh={onRefresh} 
-                  />
-          }>
+      <ScrollView className='px-4 my-6'
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+          />
+        }>
         <Text className='text-white text-2xl font-psemibold'>
           Upload Video
         </Text>
 
-        <FormField 
+        <FormField
           title="Video Title"
           value={form.title}
           placeholder='Give your video a catchy title...'
-          handleChangeText={(e) => setForm({ ...form, 
-            title:e })}
+          handleChangeText={(e) => setForm({
+            ...form,
+            title: e
+          })}
           otherStyles="mt-10"
         />
-        
-       <View className="mt-7 space-y-2">
-  <Text className="text-base text-gray-100 font-pmedium mb-2">
-    Upload Video
-  </Text>
 
-  {!form.video ? (
-    <TouchableOpacity onPress={() => openPicker('video')}>
-      <View className="w-full h-40 px-4 bg-black-100 rounded-2xl justify-center items-center">
-        <View className="w-14 h-14 border border-dashed border-secondary-100 justify-center items-center">
-          <Image
-            source={icons.upload}
-            className="w-1/2 h-1/2"
-            resizeMode="contain"
-          />
+        <View className="mt-7 space-y-2">
+          <Text className="text-base text-gray-100 font-pmedium mb-2">
+            Upload Video
+          </Text>
+
+          {!form.video ? (
+            <TouchableOpacity onPress={() => openPicker('video')}>
+              <View className="w-full h-40 px-4 bg-black-100 rounded-2xl justify-center items-center">
+                <View className="w-14 h-14 border border-dashed border-secondary-100 justify-center items-center">
+                  <Image
+                    source={icons.upload}
+                    className="w-1/2 h-1/2"
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+          ) : (
+            <View>
+              <Video
+                source={{ uri: form.video.uri }}
+                style={{ width: '100%', height: 256, borderRadius: 16 }}
+                useNativeControls
+                resizeMode={ResizeMode.COVER}
+                isLooping
+                usePoster
+                posterSource={form.videoPosterUri ? { uri: form.videoPosterUri } : undefined}
+              />
+
+              <TouchableOpacity
+                onPress={() => openPicker('video')}
+                className="mt-3 flex-row items-center bg-black-200 px-4 py-2 rounded-xl self-start"
+                activeOpacity={0.8}
+              >
+                <Image
+                  source={icons.upload}
+                  className="w-4 h-4 mr-2"
+                  resizeMode="contain"
+                />
+                <Text className="text-sm text-gray-100 font-pmedium">
+                  Change video
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
-      </View>
-    </TouchableOpacity>
-  ) : (
-    <View>
-      <Video
-        source={{ uri: form.video.uri }}
-        style={{ width: '100%', height: 256, borderRadius: 16 }}
-        useNativeControls
-        resizeMode={ResizeMode.COVER}
-        isLooping
-        usePoster
-        posterSource={form.videoPosterUri ? { uri: form.videoPosterUri } : undefined}
-      />
-
-      <TouchableOpacity
-  onPress={() => openPicker('video')}
-  className="mt-3 flex-row items-center bg-black-200 px-4 py-2 rounded-xl self-start"
-  activeOpacity={0.8}
->
-  <Image
-    source={icons.upload}
-    className="w-4 h-4 mr-2"
-    resizeMode="contain"
-  />
-  <Text className="text-sm text-gray-100 font-pmedium">
-    Change video
-  </Text>
-</TouchableOpacity>
-    </View>
-  )}
-</View>
 
         <View className='mt-7 space-y-2'>
           <Text className='text-base text-gray-100 font-pmedium mb-2'>
@@ -188,30 +188,32 @@ const Create = () => {
           <TouchableOpacity
             onPress={() => openPicker('image')}>
             {form.thumbnail ? (
-              <Image 
-                source={{ uri: form.thumbnail.uri}}
+              <Image
+                source={{ uri: form.thumbnail.uri }}
                 className='w-full h-64 rounded-2xl'
                 resizeMode='cover'
               />
-          ) : (
-            <View className="w-full h-16 px-4 bg-black-100 rounded-2xl justify-center items-center border-2 border-black-200 flex-row space-x-2">
-              <Image
-                source={icons.upload}
-                className="w-5 h-5 mr-2"
-                resizeMode='contain'
-              />
-              <Text className='text-sm text-gray-100 font-pmedium'>Choose a file</Text>
-            </View>
-          )}
+            ) : (
+              <View className="w-full h-16 px-4 bg-black-100 rounded-2xl justify-center items-center border-2 border-black-200 flex-row space-x-2">
+                <Image
+                  source={icons.upload}
+                  className="w-5 h-5 mr-2"
+                  resizeMode='contain'
+                />
+                <Text className='text-sm text-gray-100 font-pmedium'>Choose a file</Text>
+              </View>
+            )}
           </TouchableOpacity>
         </View>
 
-        <FormField 
+        <FormField
           title="AI Prompt"
           value={form.prompt}
           placeholder='The prompt you used to create this video...'
-          handleChangeText={(e) => setForm({ ...form, 
-            prompt:e })}
+          handleChangeText={(e) => setForm({
+            ...form,
+            prompt: e
+          })}
           otherStyles="mt-7"
         />
 
@@ -219,7 +221,7 @@ const Create = () => {
           title="Submit & Publish"
           handlePress={submit}
           containerStyles='mt-7 mb-20'
-          isLoading={uploading}/>
+          isLoading={uploading} />
 
       </ScrollView>
     </SafeAreaView>
