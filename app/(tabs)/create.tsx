@@ -1,15 +1,24 @@
-import { View, Text, ScrollView, TouchableOpacity, Image, Alert } from 'react-native'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import FormField from '@/components/FormField'
-import { Video, ResizeMode } from 'expo-av'
-import { icons } from '@/constants'
-import * as DocumentPicker from 'expo-document-picker'
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Image,
+  Alert,
+} from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import FormField from '@/components/FormField';
+import { Video, ResizeMode } from 'expo-av';
+import { icons } from '@/constants';
+import * as DocumentPicker from 'expo-document-picker';
 import { RefreshControl } from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as VideoThumbnails from 'expo-video-thumbnails';
-
-import CustomButton from '@/components/CustomButton'
+import { createVideo } from '@/lib/appwrite';
+import CustomButton from '@/components/CustomButton';
+import { useGlobalContext } from '../../context/GlobalProvider';
+import { router } from 'expo-router';
 
 type PickerType = 'image' | 'video';
 
@@ -22,6 +31,7 @@ type FormState = {
 };
 
 const Create = () => {
+  const { user } = useGlobalContext();
 
   const defaultForm = useMemo<FormState>(
     () => ({
@@ -31,7 +41,7 @@ const Create = () => {
       prompt: '',
       videoPosterUri: null,
     }),
-    []
+    [],
   );
 
   const [form, setForm] = useState<FormState>(defaultForm);
@@ -49,14 +59,16 @@ const Create = () => {
   }, [resetForm]);
 
   // Helper: ensure video URI becomes file:// (expo-av friendly on Android)
-  const ensureFileUri = useCallback(async (uri: string, fallbackName: string) => {
-    if (!uri.startsWith('content://')) return uri;
+  const ensureFileUri = useCallback(
+    async (uri: string, fallbackName: string) => {
+      if (!uri.startsWith('content://')) return uri;
 
-    const dest = FileSystem.cacheDirectory + fallbackName;
-    await FileSystem.copyAsync({ from: uri, to: dest });
-    return dest;
-  }, []);
-
+      const dest = FileSystem.cacheDirectory + fallbackName;
+      await FileSystem.copyAsync({ from: uri, to: dest });
+      return dest;
+    },
+    [],
+  );
 
   const openPicker = useCallback(
     async (selectType: PickerType) => {
@@ -71,13 +83,16 @@ const Create = () => {
 
       const finalUri = await ensureFileUri(
         asset.uri,
-        asset.name ?? `${selectType}-${Date.now()}`
+        asset.name ?? `${selectType}-${Date.now()}`,
       );
 
       if (selectType === 'video') {
-        const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(finalUri, {
-          time: 1000, // avoids black first frame in many videos
-        });
+        const { uri: thumbUri } = await VideoThumbnails.getThumbnailAsync(
+          finalUri,
+          {
+            time: 1000, // avoids black first frame in many videos
+          },
+        );
 
         setForm((prev) => ({
           ...prev,
@@ -94,43 +109,65 @@ const Create = () => {
         thumbnail: { ...asset, uri: finalUri },
       }));
     },
-    [ensureFileUri] 
+    [ensureFileUri],
+  );
 
+  // 7) These handlers are stable and avoid spreading stale state
   const onChangeTitle = useCallback((value: string) => {
-      setForm((prev) => ({ ...prev, title: value }));
-    }, []);
+    setForm((prev) => ({ ...prev, title: value }));
+  }, []);
 
   const onChangePrompt = useCallback((value: string) => {
     setForm((prev) => ({ ...prev, prompt: value }));
   }, []);
 
-  const submit = useCallback(async () => {
-    // handle submit logic
-    // setUploading(true) ...
-    // setUploading(false) ...
-  }, []);
+  const submit = async () => {
+    if (
+      form.prompt === '' ||
+      form.title === '' ||
+      !form.thumbnail ||
+      !form.video
+    ) {
+      return Alert.alert('Please provide all fields');
+    }
+
+    setUploading(true);
+    try {
+      await createVideo({
+        ...form,
+        userId: user.$id,
+      });
+
+      Alert.alert('Success', 'Post uploaded successfully');
+      router.push('/home');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    } finally {
+      resetForm();
+      setUploading(false);
+    }
+  };
 
   return (
-    <SafeAreaView className='bg-primary h-full'>
-      <ScrollView className='px-4 my-6'
+    <SafeAreaView className="bg-primary h-full">
+      <ScrollView
+        className="px-4 my-6"
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          />
-        }>
-        <Text className='text-white text-2xl font-psemibold'>
-          Upload Video
-        </Text>
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        <Text className="text-white text-2xl font-psemibold">Upload Video</Text>
 
         <FormField
           title="Video Title"
           value={form.title}
-          placeholder='Give your video a catchy title...'
-          handleChangeText={(e) => setForm({
-            ...form,
-            title: e
-          })}
+          placeholder="Give your video a catchy title..."
+          handleChangeText={(e) =>
+            setForm({
+              ...form,
+              title: e,
+            })
+          }
           otherStyles="mt-10"
         />
 
@@ -160,7 +197,9 @@ const Create = () => {
                 resizeMode={ResizeMode.COVER}
                 isLooping
                 usePoster
-                posterSource={form.videoPosterUri ? { uri: form.videoPosterUri } : undefined}
+                posterSource={
+                  form.videoPosterUri ? { uri: form.videoPosterUri } : undefined
+                }
               />
 
               <TouchableOpacity
@@ -181,26 +220,27 @@ const Create = () => {
           )}
         </View>
 
-        <View className='mt-7 space-y-2'>
-          <Text className='text-base text-gray-100 font-pmedium mb-2'>
+        <View className="mt-7 space-y-2">
+          <Text className="text-base text-gray-100 font-pmedium mb-2">
             Thumbnail Image
           </Text>
-          <TouchableOpacity
-            onPress={() => openPicker('image')}>
+          <TouchableOpacity onPress={() => openPicker('image')}>
             {form.thumbnail ? (
               <Image
                 source={{ uri: form.thumbnail.uri }}
-                className='w-full h-64 rounded-2xl'
-                resizeMode='cover'
+                className="w-full h-64 rounded-2xl"
+                resizeMode="cover"
               />
             ) : (
               <View className="w-full h-16 px-4 bg-black-100 rounded-2xl justify-center items-center border-2 border-black-200 flex-row space-x-2">
                 <Image
                   source={icons.upload}
                   className="w-5 h-5 mr-2"
-                  resizeMode='contain'
+                  resizeMode="contain"
                 />
-                <Text className='text-sm text-gray-100 font-pmedium'>Choose a file</Text>
+                <Text className="text-sm text-gray-100 font-pmedium">
+                  Choose a file
+                </Text>
               </View>
             )}
           </TouchableOpacity>
@@ -209,23 +249,25 @@ const Create = () => {
         <FormField
           title="AI Prompt"
           value={form.prompt}
-          placeholder='The prompt you used to create this video...'
-          handleChangeText={(e) => setForm({
-            ...form,
-            prompt: e
-          })}
+          placeholder="The prompt you used to create this video..."
+          handleChangeText={(e) =>
+            setForm({
+              ...form,
+              prompt: e,
+            })
+          }
           otherStyles="mt-7"
         />
 
         <CustomButton
           title="Submit & Publish"
           handlePress={submit}
-          containerStyles='mt-7 mb-20'
-          isLoading={uploading} />
-
+          containerStyles="mt-7 mb-20"
+          isLoading={uploading}
+        />
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default Create
+export default Create;
