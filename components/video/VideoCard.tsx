@@ -10,6 +10,7 @@ import React from 'react';
 import { icons } from '@/constants';
 import { useState } from 'react';
 import WebView from 'react-native-webview';
+import VideoActionsModal from './VideoActionsModal';
 
 interface Creator {
   username: string;
@@ -70,7 +71,7 @@ const VideoCard = ({
             </Text>
           </View>
 
-          {showActions ? (
+          {showActions && (
             <TouchableOpacity
               className="pt-2"
               activeOpacity={0.8}
@@ -82,14 +83,6 @@ const VideoCard = ({
                 resizeMode="contain"
               />
             </TouchableOpacity>
-          ) : (
-            <View className="pt-2">
-              <Image
-                source={icons.menu}
-                className="w-5 h-5 opacity-30"
-                resizeMode="contain"
-              />
-            </View>
           )}
         </View>
       </View>
@@ -129,60 +122,18 @@ const VideoCard = ({
         </TouchableOpacity>
       )}
 
-      {/*  Action menu modal */}
-      <Modal
+      <VideoActionsModal
         visible={menuOpen}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setMenuOpen(false)}
-      >
-        {/* tap outside to close */}
-        <Pressable
-          style={{
-            flex: 1,
-            backgroundColor: 'rgba(0,0,0,0.35)',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-          onPress={() => setMenuOpen(false)}
-        >
-          {/* prevent closing when tapping the box */}
-          <Pressable
-            style={{
-              width: 220,
-              backgroundColor: '#121212',
-              borderRadius: 14,
-              paddingVertical: 8,
-              overflow: 'hidden',
-            }}
-            onPress={() => {}}
-          >
-            <TouchableOpacity
-              style={{ paddingVertical: 12, paddingHorizontal: 14 }}
-              activeOpacity={0.8}
-              onPress={() => {
-                setMenuOpen(false);
-                onEditPress?.(video);
-              }}
-            >
-              <Text style={{ color: 'white', fontSize: 16 }}>Edit</Text>
-            </TouchableOpacity>
-
-            <View style={{ height: 1, backgroundColor: '#2a2a2a' }} />
-
-            <TouchableOpacity
-              style={{ paddingVertical: 12, paddingHorizontal: 14 }}
-              activeOpacity={0.8}
-              onPress={() => {
-                setMenuOpen(false);
-                onDeletePress?.(video);
-              }}
-            >
-              <Text style={{ color: '#ff5a5a', fontSize: 16 }}>Delete</Text>
-            </TouchableOpacity>
-          </Pressable>
-        </Pressable>
-      </Modal>
+        onClose={() => setMenuOpen(false)}
+        onEdit={() => {
+          setMenuOpen(false);
+          onEditPress?.(video);
+        }}
+        onDelete={() => {
+          setMenuOpen(false);
+          onDeletePress?.(video);
+        }}
+      />
     </View>
   );
 };

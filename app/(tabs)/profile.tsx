@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { deleteVideoPost, getUserPosts, signOut } from '@/lib/appwrite';
 import useAppwrite from '@/lib/useAppwrite';
-import VideoCard from '@/components/VideoCard';
+import VideoCard from '@/components/video/VideoCard';
 import { useGlobalContext } from '@/context/GlobalProvider';
 import { icons } from '@/constants';
 import InfoBox from '@/components/InfoBox';
